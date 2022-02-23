@@ -31,30 +31,37 @@ func (s *Server) Register(r *mux.Router) {
 	http.Handle("/", r)
 }
 
-func (s *Server) UpdateEventHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("This is UpdateEventHandler"))
-}
-
-func (s *Server) GetEventByIdHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("This is GetEventByIdHandler"))
-}
-
-func (s *Server) CreateEventHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("This is CreateEventHandler"))
-}
-
-func (s *Server) GetEventsHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("This is GetEventsHandler"))
-}
-
-func (s *Server) UpdateUserHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("This is UpdateUserHandler"))
+func (s *Server) LoginHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(200)
+	writer.Write([]byte("This is LoginHandler"))
 }
 
 func (s *Server) LogoutHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(200)
 	writer.Write([]byte("This is LogoutHandler"))
 }
 
-func (s *Server) LoginHandler(writer http.ResponseWriter, request *http.Request) {
-	writer.Write([]byte("This is LoginHandler"))
+func (s *Server) UpdateUserHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(200)
+	writer.Write([]byte("This is UpdateUserHandler"))
+}
+
+func (s *Server) GetEventsHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(200)
+	writer.Write([]byte("This is GetEventsHandler"))
+}
+
+func (s *Server) CreateEventHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(201)
+	writer.Write([]byte("This is CreateEventHandler"))
+}
+
+func (s *Server) GetEventByIdHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(200)
+	writer.Write([]byte("This is GetEventByIdHandler"))
+}
+
+func (s *Server) UpdateEventHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.WriteHeader(201)
+	writer.Write([]byte("This is UpdateEventHandler"))
 }
