@@ -1,10 +1,42 @@
 package config
 
+import (
+	"github.com/ilyakaznacheev/cleanenv"
+	"log"
+	"sync"
+)
+
 // Application holds application configuration values
 type Application struct {
-	DB *Database
+	DB      *Database `yaml:"db"`
+	Lsn     *Listen   `yaml:"listen"`
+	IsDebug *bool     `yaml:"is_debug"`
 }
 
 type Database struct {
-	DSN string `env:"DSN"`
+	Host   string `yaml:"host"`
+	Port   string `yaml:"port"`
+	User   string `yaml:"user"`
+	Pass   string `yaml:"pass"`
+	DbName string `yaml:"db_name"`
+}
+
+type Listen struct {
+	BindIP string `yaml:"bind_ip"`
+	Port   string `yaml:"port"`
+}
+
+var instance *Application
+var once sync.Once
+
+func GetConfig() *Application {
+	once.Do(func() {
+		instance = &Application{}
+		if err := cleanenv.ReadConfig("config.yml", instance); err != nil {
+			help, _ := cleanenv.GetDescription(instance, nil)
+			log.Println(help)
+			log.Fatal(err)
+		}
+	})
+	return instance
 }

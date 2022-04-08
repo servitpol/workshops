@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gorilla/mux"
+	"http/internal/config"
 	"log"
 	"net/http"
 	"time"
@@ -12,20 +13,26 @@ type Validator interface {
 }
 
 type Server struct {
-	valid Validator
+	Valid Validator
 }
 
 func NewServer(valid Validator) *Server {
-	return &Server{valid: valid}
+	return &Server{Valid: valid}
 }
 
 func StartServer(router *mux.Router) {
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         "127.0.0.1:8000",
+		Addr:         getAddr(),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
 	log.Fatal(srv.ListenAndServe())
+}
+
+func getAddr() string {
+	cfg := config.GetConfig()
+	addr := cfg.Lsn.BindIP + ":" + cfg.Lsn.Port
+	return addr
 }
