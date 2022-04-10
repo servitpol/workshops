@@ -12,3 +12,8 @@ db:
   user: postgres
   pass: secret
   db_name: postgres
+
+jwt:
+  secret_key: verysecretkey
+  issuer: AuthService
+  ex_hours: 24

@@ -2,29 +2,27 @@ package postgre
 
 import (
 	"context"
-	"fmt"
-	"http/internal/handlers"
 	"log"
 )
 
-func (pg *Postgres) Login(user *handlers.User) error {
+func (pg *Postgres) GetUser(username string) (string, error) {
 
-	sql := "SELECT email FROM users WHERE username=$1 AND password=$2"
+	sql := "SELECT password FROM users WHERE username=$1"
 
 	paramValues := [][]byte{
-		[]byte(user.Username),
-		[]byte(user.Password),
+		[]byte(username),
 	}
 	pgConn := NewRepository()
 
 	result := pgConn.ExecParams(context.Background(), sql, paramValues, nil, nil, nil)
+	var pass string
 	for result.NextRow() {
-		fmt.Println("User has email:", string(result.Values()[0]))
+		pass = string(result.Values()[0])
 	}
 	_, err := result.Close()
 	if err != nil {
 		log.Fatalln("failed reading result:", err)
 	}
 
-	return err
+	return pass, err
 }

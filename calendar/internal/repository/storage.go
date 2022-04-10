@@ -1,9 +1,7 @@
 package repository
 
-import "http/internal/handlers"
-
 type Storage interface {
-	Login(user *handlers.User) error
+	GetUser(string) (string, error)
 	GetEvents() error
 }
 

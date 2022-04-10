@@ -10,6 +10,7 @@ import (
 type Application struct {
 	DB      *Database `yaml:"db"`
 	Lsn     *Listen   `yaml:"listen"`
+	Jwt     *Jwt      `yaml:"jwt"`
 	IsDebug *bool     `yaml:"is_debug"`
 }
 
@@ -24,6 +25,12 @@ type Database struct {
 type Listen struct {
 	BindIP string `yaml:"bind_ip"`
 	Port   string `yaml:"port"`
+}
+
+type Jwt struct {
+	Secret  string `yaml:"secret_key"`
+	Issuer  string `yaml:"issuer"`
+	ExHours int64  `yaml:"ex_hours"`
 }
 
 var instance *Application
