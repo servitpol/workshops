@@ -2,14 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/dgrijalva/jwt-go"
 	"http/internal/config"
 	"http/internal/middleware/auth"
 	"http/internal/models"
 	"http/internal/repository"
 	"log"
 	"net/http"
-	"time"
 )
 
 func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
@@ -72,18 +70,12 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 
 func (h Handler) Logout(writer http.ResponseWriter, r *http.Request) {
 	clientToken := auth.GetToken(writer, r)
-
-	cfg := config.GetConfig()
-
-	token, _ := jwt.ParseWithClaims(
-		clientToken,
-		&auth.JwtClaim{},
-		func(token *jwt.Token) (interface{}, error) {
-			return []byte(cfg.Jwt.Secret), nil
-		},
-	)
-	claims, _ := token.Claims.(*auth.JwtClaim)
-	claims.ExpiresAt = time.Now().Local().Unix() - 100000
+	storage := repository.NewStorage(h.Storage)
+	user, err := storage.Db.GetUserByToken(clientToken)
+	err = storage.Db.UpdateUserToken("", user.Id)
+	if err != nil {
+		log.Println(err)
+	}
 
 	writer.WriteHeader(200)
 	writer.Write([]byte("successful loged out"))
