@@ -15,9 +15,9 @@ func (s *Server) Register(r *mux.Router) {
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(auth.CheckTokenMiddleware)
 	api.Path("/users").Handler(http.HandlerFunc(handler.UpdateUserHandler)).Methods("PUT")
-	api.Path("/events").Handler(http.HandlerFunc(handler.GetEventsHandler)).Methods("GET")
-	api.Path("/events").Handler(http.HandlerFunc(handler.CreateEventHandler)).Methods("POST")
-	api.Path("/event/{id}").Handler(http.HandlerFunc(handler.GetEventByIdHandler)).Methods("GET")
+	api.Path("/events").Handler(http.HandlerFunc(handler.GetEvents)).Methods("GET")
+	api.Path("/events").Handler(http.HandlerFunc(handler.CreateEvent)).Methods("POST")
+	api.Path("/event/{id}").Handler(http.HandlerFunc(handler.GetEventById)).Methods("GET")
 	api.Path("/event/{id}").Handler(http.HandlerFunc(handler.UpdateEventHandler)).Methods("PUT")
 
 	http.Handle("/", r)

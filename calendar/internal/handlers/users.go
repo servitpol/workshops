@@ -2,43 +2,19 @@ package handlers
 
 import (
 	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/dgrijalva/jwt-go"
 	"http/internal/config"
 	"http/internal/middleware/auth"
+	"http/internal/models"
 	"http/internal/repository"
 	"net/http"
+	"time"
 )
 
-type User struct {
-	Id       int    `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-}
-
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
-type LoginPayload struct {
-	Password string `json:"password"`
-	Username string `json:"email"`
-}
-
-func (user *User) CheckPassword(providedPassword string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(providedPassword))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
-	var user *User
-	var payload LoginPayload
 
-	//need to add validate login|password fields
+	var payload models.LoginPayload
+
 	decoder := json.NewDecoder(r.Body)
 	var request map[string]string
 	err := decoder.Decode(&request)
@@ -46,17 +22,14 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	payload = LoginPayload{
+	payload = models.LoginPayload{
 		Password: request["password"],
 		Username: request["username"],
 	}
 
 	storage := repository.NewStorage(h.Storage)
-	storagePassword, err := storage.Db.GetUser(payload.Username)
+	user, _ := storage.Db.GetUserByUsername(payload.Username)
 
-	user = &User{
-		Password: storagePassword,
-	}
 	if err != nil {
 		writer.WriteHeader(403)
 		writer.Write([]byte("resource not found"))
@@ -77,14 +50,14 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 		ExpirationHours: cfg.Jwt.ExHours,
 	}
 	signedToken, _ := jwtWrapper.GenerateToken(payload.Username)
-	tokenResponse := LoginResponse{
+	tokenResponse := models.LoginResponse{
 		Token: signedToken,
 	}
 
 	js, err := json.Marshal(tokenResponse)
 	if err != nil {
 		writer.WriteHeader(403)
-		writer.Write([]byte("rasas"))
+		writer.Write([]byte(err.Error()))
 		return
 	}
 	writer.WriteHeader(200)
@@ -92,8 +65,22 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) Logout(writer http.ResponseWriter, r *http.Request) {
+	clientToken := auth.GetToken(writer, r)
+
+	cfg := config.GetConfig()
+
+	token, _ := jwt.ParseWithClaims(
+		clientToken,
+		&auth.JwtClaim{},
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(cfg.Jwt.Secret), nil
+		},
+	)
+	claims, _ := token.Claims.(*auth.JwtClaim)
+	claims.ExpiresAt = time.Now().Local().Unix() - 100000
+
 	writer.WriteHeader(200)
-	writer.Write([]byte("This is LogoutHandler"))
+	writer.Write([]byte("successful loged out"))
 }
 
 func (h Handler) UpdateUserHandler(writer http.ResponseWriter, r *http.Request) {

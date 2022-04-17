@@ -3,7 +3,6 @@ package auth
 import (
 	"errors"
 	"http/internal/config"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -71,20 +70,7 @@ func (j *JwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err er
 
 func CheckTokenMiddleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		clientToken := r.Header.Get("Authorization")
-		if clientToken == "" {
-			log.Fatal(403, "No Authorization header provided")
-			return
-		}
-
-		extractedToken := strings.Split(clientToken, "Bearer ")
-
-		if len(extractedToken) == 2 {
-			clientToken = strings.TrimSpace(extractedToken[1])
-		} else {
-			log.Fatal(400, "Incorrect Format of Authorization Token")
-			return
-		}
+		clientToken := GetToken(w, r)
 
 		cfg := config.GetConfig()
 		jwtWrapper := JwtWrapper{
@@ -94,9 +80,31 @@ func CheckTokenMiddleware(h http.Handler) http.Handler {
 
 		_, err := jwtWrapper.ValidateToken(clientToken)
 		if err != nil {
-			log.Fatal(401, err.Error())
+			w.WriteHeader(400)
+			w.Write([]byte(err.Error()))
 			return
 		}
 		h.ServeHTTP(w, r)
 	})
+}
+
+func GetToken(w http.ResponseWriter, r *http.Request) string {
+	clientToken := r.Header.Get("Authorization")
+	if clientToken == "" {
+		w.WriteHeader(403)
+		w.Write([]byte("No Authorization header provided"))
+		return clientToken
+	}
+
+	extractedToken := strings.Split(clientToken, "Bearer ")
+
+	if len(extractedToken) == 2 {
+		clientToken = strings.TrimSpace(extractedToken[1])
+	} else {
+		w.WriteHeader(400)
+		w.Write([]byte("Incorrect Format of Authorization Token"))
+		return clientToken
+	}
+
+	return clientToken
 }

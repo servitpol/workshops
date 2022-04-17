@@ -1,8 +1,13 @@
 package repository
 
+import "http/internal/models"
+
 type Storage interface {
-	GetUser(string) (string, error)
-	GetEvents() error
+	GetUserByUsername(string) (models.User, error)
+	GetUserByToken(string) (models.User, error)
+	GetEvents() ([]models.Event, error)
+	GetEventById(string) (models.Event, error)
+	CreateEvent(event models.Event) (int, error)
 }
 
 type db struct {

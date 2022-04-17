@@ -2,5 +2,7 @@ CREATE TABLE IF NOT EXISTS users(
     id serial PRIMARY KEY,
     username VARCHAR (50) UNIQUE NOT NULL,
     password VARCHAR (200) NOT NULL,
-    email VARCHAR (300) UNIQUE NOT NULL
+    email VARCHAR (300) UNIQUE NOT NULL,
+    timezone VARCHAR (50) NOT NULL,
+    token VARCHAR (300) UNIQUE NOT NULL
 );
