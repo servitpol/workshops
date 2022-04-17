@@ -7,6 +7,7 @@ import (
 	"http/internal/middleware/auth"
 	"http/internal/models"
 	"http/internal/repository"
+	"log"
 	"net/http"
 	"time"
 )
@@ -54,6 +55,11 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 		Token: signedToken,
 	}
 
+	err = storage.Db.UpdateUserToken(signedToken, user.Id)
+	if err != nil {
+		log.Println(err)
+	}
+
 	js, err := json.Marshal(tokenResponse)
 	if err != nil {
 		writer.WriteHeader(403)
@@ -83,7 +89,22 @@ func (h Handler) Logout(writer http.ResponseWriter, r *http.Request) {
 	writer.Write([]byte("successful loged out"))
 }
 
-func (h Handler) UpdateUserHandler(writer http.ResponseWriter, r *http.Request) {
+func (h Handler) UpdateUser(writer http.ResponseWriter, r *http.Request) {
+
+	var request map[string]string
+	clientToken := auth.GetToken(writer, r)
+	storage := repository.NewStorage(h.Storage)
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&request)
+	if err != nil {
+		log.Println(err)
+	}
+	err = storage.Db.UpdateUserTimezone(clientToken, request["timezone"])
+	if err != nil {
+		log.Println(err)
+	}
+
 	writer.WriteHeader(200)
-	writer.Write([]byte("This is UpdateUserHandler"))
+	writer.Write([]byte("Successfully saved"))
 }

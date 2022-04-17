@@ -19,7 +19,7 @@ func (pg *Postgres) GetEvents() ([]models.Event, error) {
 
 	var mSlice = make([]models.Event, 0)
 	for mRows.Next() {
-		err := mRows.Scan(&e.Id, &e.Title, &e.Description, &e.TimestampFrom, &e.TimestampTo)
+		err := mRows.Scan(&e.Id, &e.Uid, &e.Title, &e.Description, &e.TimestampFrom, &e.TimestampTo)
 		if err != nil {
 			log.Println(err)
 		}

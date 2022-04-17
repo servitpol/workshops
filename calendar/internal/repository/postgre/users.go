@@ -48,23 +48,28 @@ func (pg *Postgres) GetUserByToken(token string) (models.User, error) {
 	return u, err
 }
 
-func (pg *Postgres) UpdateUserToken(token string) (models.User, error) {
+func (pg *Postgres) UpdateUserTimezone(token, timezone string) error {
 
-	var u models.User
-	sql := "SELECT * FROM users WHERE token=$1"
+	sql := "UPDATE users SET timezone=$1 WHERE token=$2"
 
 	pgConn := NewRepository()
-	mRows, err := pgConn.Query(context.Background(), sql, token)
+	_, err := pgConn.Query(context.Background(), sql, timezone, token)
 	if err != nil {
 		log.Println(err)
 	}
 
-	for mRows.Next() {
-		err := mRows.Scan(&u.Id, &u.Username, &u.Password, &u.Email, &u.Timezone, &u.Token)
-		if err != nil {
-			log.Println(err)
-		}
+	return err
+}
+
+func (pg *Postgres) UpdateUserToken(token string, id int) error {
+
+	sql := "UPDATE users SET token=$1 WHERE id=$2"
+
+	pgConn := NewRepository()
+	_, err := pgConn.Query(context.Background(), sql, token, id)
+	if err != nil {
+		log.Println(err)
 	}
 
-	return u, err
+	return err
 }

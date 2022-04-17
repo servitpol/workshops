@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"time"
 )
 
@@ -56,4 +57,25 @@ func (*Event) TimeToTimestamp(t, timezone string) (int64, error) {
 	}
 
 	return timeUnix.Unix(), err
+}
+
+func (e *Event) MakeApiData(user User) EventResult {
+	df, tf, err := e.TimestampToDateTime(e.TimestampFrom, user.Timezone)
+	if err != nil {
+		log.Println(err)
+	}
+	dt, tt, err := e.TimestampToDateTime(e.TimestampTo, user.Timezone)
+	if err != nil {
+		log.Println(err)
+	}
+	event := EventResult{
+		Id:       user.Id,
+		Title:    e.Title,
+		DateFrom: df,
+		DateTo:   dt,
+		TimeFrom: tf,
+		TimeTo:   tt,
+	}
+
+	return event
 }

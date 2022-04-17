@@ -10,25 +10,36 @@ import (
 	"net/http"
 )
 
+func (h Handler) GetEvents(writer http.ResponseWriter, r *http.Request) {
+
+	clientToken := auth.GetToken(writer, r)
+	storage := repository.NewStorage(h.Storage)
+	user, _ := storage.Db.GetUserByToken(clientToken)
+	events, err := storage.Db.GetEvents()
+	if err != nil {
+		log.Println(err)
+	}
+
+	var mSlice = make([]models.EventResult, 0)
+	for _, event := range events {
+		e := event.MakeApiData(user)
+		mSlice = append(mSlice, e)
+	}
+
+	js, err := json.Marshal(mSlice)
+	writer.WriteHeader(200)
+	writer.Write(js)
+}
+
 func (h Handler) GetEventById(writer http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	clientToken := auth.GetToken(writer, r)
-
 	storage := repository.NewStorage(h.Storage)
 	user, err := storage.Db.GetUserByToken(clientToken)
+
 	e, err := storage.Db.GetEventById(vars["id"])
-
-	df, tf, err := e.TimestampToDateTime(e.TimestampFrom, user.Timezone)
-	dt, tt, err := e.TimestampToDateTime(e.TimestampTo, user.Timezone)
-
-	event := models.EventResult{
-		Id:       user.Id,
-		Title:    e.Title,
-		DateFrom: df,
-		DateTo:   dt,
-		TimeFrom: tf,
-		TimeTo:   tt,
-	}
+	event := e.MakeApiData(user)
 
 	js, err := json.Marshal(event)
 	if err != nil {
@@ -83,9 +94,4 @@ func (h Handler) CreateEvent(writer http.ResponseWriter, r *http.Request) {
 func (h Handler) UpdateEventHandler(writer http.ResponseWriter, r *http.Request) {
 	writer.WriteHeader(200)
 	writer.Write([]byte("This is UpdateEventHandler"))
-}
-
-func (h Handler) GetEvents(writer http.ResponseWriter, r *http.Request) {
-	writer.WriteHeader(200)
-	writer.Write([]byte("This is GetEventsHandler"))
 }
