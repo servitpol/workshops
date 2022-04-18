@@ -17,7 +17,7 @@ func (s *Server) Register(r *mux.Router) {
 	api.Path("/events").Handler(http.HandlerFunc(handler.GetEvents)).Methods("GET")
 	api.Path("/events").Handler(http.HandlerFunc(handler.CreateEvent)).Methods("POST")
 	api.Path("/event/{id}").Handler(http.HandlerFunc(handler.GetEventById)).Methods("GET")
-	api.Path("/event/{id}").Handler(http.HandlerFunc(handler.UpdateEventHandler)).Methods("PUT")
+	api.Path("/event/{id}").Handler(http.HandlerFunc(handler.UpdateEvent)).Methods("PUT")
 
 	http.Handle("/", r)
 }

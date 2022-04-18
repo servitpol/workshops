@@ -70,3 +70,24 @@ func (pg *Postgres) CreateEvent(event models.Event) (int, error) {
 
 	return event.Id, err
 }
+
+func (pg *Postgres) UpdateEvent(event models.Event, id int) error {
+
+	sql := "UPDATE events SET title=$1, description=$2, timestamp_from=$3, timestamp_to=$4 WHERE id=$5 AND user_id=$6"
+
+	pgConn := NewRepository()
+	_, err := pgConn.Query(context.Background(), sql,
+		event.Title,
+		event.Description,
+		event.TimestampFrom,
+		event.TimestampTo,
+		id,
+		event.Uid,
+	)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return err
+}

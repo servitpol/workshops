@@ -7,6 +7,7 @@ import (
 	"http/internal/models"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func (h Handler) GetEvents(writer http.ResponseWriter, r *http.Request) {
@@ -89,7 +90,44 @@ func (h Handler) CreateEvent(writer http.ResponseWriter, r *http.Request) {
 	writer.Write(js)
 }
 
-func (h Handler) UpdateEventHandler(writer http.ResponseWriter, r *http.Request) {
+func (h Handler) UpdateEvent(writer http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+
+	var e models.Event
+	var request map[string]string
+
+	clientToken := auth.GetToken(writer, r)
+
+	user, _ := h.Storage.Db.GetUserByToken(clientToken)
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&request)
+	if err != nil {
+		log.Println(err)
+	}
+
+	tf, err := e.TimeToTimestamp(request["time_from"], user.Timezone)
+	if err != nil {
+		log.Println(err)
+	}
+	tt, err := e.TimeToTimestamp(request["time_to"], user.Timezone)
+	if err != nil {
+		log.Println(err)
+	}
+
+	eventId, err := strconv.Atoi(vars["id"])
+
+	payload := models.Event{
+		Uid:           user.Id,
+		Title:         request["title"],
+		Description:   request["description"],
+		TimestampFrom: tf,
+		TimestampTo:   tt,
+	}
+
+	err = h.Storage.Db.UpdateEvent(payload, eventId)
+
 	writer.WriteHeader(200)
-	writer.Write([]byte("This is UpdateEventHandler"))
+	writer.Write([]byte("Successfully saved"))
 }
