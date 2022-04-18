@@ -41,6 +41,7 @@ func (j *JwtWrapper) GenerateToken(email string) (signedToken string, err error)
 }
 
 func (j *JwtWrapper) ValidateToken(signedToken string) (claims *JwtClaim, err error) {
+
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&JwtClaim{},

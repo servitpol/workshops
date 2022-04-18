@@ -12,12 +12,12 @@ type Storage interface {
 	CreateEvent(event models.Event) (int, error)
 }
 
-type db struct {
+type Db struct {
 	Db Storage
 }
 
-func NewStorage(st Storage) *db {
-	return &db{
-		Db: st,
+func NewStorage(s Storage) *Db {
+	return &Db{
+		Db: s,
 	}
 }

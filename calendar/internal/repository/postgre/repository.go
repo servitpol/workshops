@@ -9,10 +9,10 @@ import (
 )
 
 type Postgres struct {
-	//
+	db *pgxpool.Pool
 }
 
-func NewRepository() *pgxpool.Pool {
+func New() *Postgres {
 
 	cfg := config.GetConfig()
 	var dbUrl = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", cfg.DB.User, cfg.DB.Pass, cfg.DB.Host, cfg.DB.Port, cfg.DB.DbName)
@@ -22,5 +22,5 @@ func NewRepository() *pgxpool.Pool {
 		log.Fatalln("pgСonn failed to connect:", err)
 	}
 
-	return pgConnect
+	return &Postgres{db: pgConnect}
 }

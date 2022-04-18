@@ -11,8 +11,7 @@ func (pg *Postgres) GetEvents() ([]models.Event, error) {
 	var e models.Event
 	sql := "SELECT * FROM events"
 
-	pgConn := NewRepository()
-	mRows, err := pgConn.Query(context.Background(), sql)
+	mRows, err := pg.db.Query(context.Background(), sql)
 	if err != nil {
 		log.Println(err)
 	}
@@ -34,8 +33,7 @@ func (pg *Postgres) GetEventById(id string) (models.Event, error) {
 	var e models.Event
 	sql := "SELECT title, description, timestamp_from, timestamp_to FROM events WHERE id=$1"
 
-	pgConn := NewRepository()
-	mRows, err := pgConn.Query(context.Background(), sql, id)
+	mRows, err := pg.db.Query(context.Background(), sql, id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -55,8 +53,7 @@ func (pg *Postgres) CreateEvent(event models.Event) (int, error) {
 	sql := "INSERT INTO events(user_id, title, description, timestamp_from, timestamp_to ) " +
 		"VALUES ($1, $2, $3, $4, $5) RETURNING id"
 
-	pgConn := NewRepository()
-	err := pgConn.QueryRow(context.Background(), sql,
+	err := pg.db.QueryRow(context.Background(), sql,
 		event.Uid,
 		event.Title,
 		event.Description,

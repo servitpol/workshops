@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"http/internal/middleware/auth"
 	"http/internal/models"
-	"http/internal/repository"
 	"log"
 	"net/http"
 )
@@ -13,9 +12,8 @@ import (
 func (h Handler) GetEvents(writer http.ResponseWriter, r *http.Request) {
 
 	clientToken := auth.GetToken(writer, r)
-	storage := repository.NewStorage(h.Storage)
-	user, _ := storage.Db.GetUserByToken(clientToken)
-	events, err := storage.Db.GetEvents()
+	user, _ := h.R.Db.GetUserByToken(clientToken)
+	events, err := h.R.Db.GetEvents()
 	if err != nil {
 		log.Println(err)
 	}
@@ -35,10 +33,9 @@ func (h Handler) GetEventById(writer http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	clientToken := auth.GetToken(writer, r)
-	storage := repository.NewStorage(h.Storage)
-	user, err := storage.Db.GetUserByToken(clientToken)
+	user, err := h.R.Db.GetUserByToken(clientToken)
 
-	e, err := storage.Db.GetEventById(vars["id"])
+	e, err := h.R.Db.GetEventById(vars["id"])
 	event := e.MakeApiData(user)
 
 	js, err := json.Marshal(event)
@@ -58,8 +55,7 @@ func (h Handler) CreateEvent(writer http.ResponseWriter, r *http.Request) {
 
 	clientToken := auth.GetToken(writer, r)
 
-	storage := repository.NewStorage(h.Storage)
-	user, _ := storage.Db.GetUserByToken(clientToken)
+	user, _ := h.R.Db.GetUserByToken(clientToken)
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&request)
@@ -84,7 +80,7 @@ func (h Handler) CreateEvent(writer http.ResponseWriter, r *http.Request) {
 		TimestampTo:   tt,
 	}
 
-	id, err := storage.Db.CreateEvent(payload)
+	id, err := h.R.Db.CreateEvent(payload)
 
 	js, err := json.Marshal(id)
 	writer.WriteHeader(200)
