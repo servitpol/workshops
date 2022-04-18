@@ -2,13 +2,12 @@ package http
 
 import (
 	"github.com/gorilla/mux"
-	"http/internal/handlers"
 	"http/internal/middleware/auth"
 	"net/http"
 )
 
 func (s *Server) Register(r *mux.Router) {
-	handler := handlers.Handler{}
+	handler := s.Handler
 	r.HandleFunc("/login", handler.Login).Methods("POST")
 	r.HandleFunc("/logout", handler.Logout).Methods("GET")
 

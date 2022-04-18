@@ -3,6 +3,8 @@ package http
 import (
 	"github.com/gorilla/mux"
 	"http/internal/config"
+	"http/internal/handlers"
+	"http/internal/repository"
 	"log"
 	"net/http"
 	"time"
@@ -13,11 +15,17 @@ type Validator interface {
 }
 
 type Server struct {
-	Valid Validator
+	Valid   Validator
+	Handler handlers.Handler
 }
 
-func NewServer(valid Validator) *Server {
-	return &Server{Valid: valid}
+func NewServer(valid Validator, r repository.Db) *Server {
+	return &Server{
+		Valid: valid,
+		Handler: struct {
+			Storage repository.Db
+		}{Storage: r},
+	}
 }
 
 func StartServer(router *mux.Router) {

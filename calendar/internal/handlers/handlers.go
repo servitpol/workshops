@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	storage "http/internal/repository/postgre"
+	"http/internal/repository"
 )
 
 type Handler struct {
-	Storage *storage.Postgres
+	Storage repository.Db
 }

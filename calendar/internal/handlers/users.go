@@ -5,7 +5,6 @@ import (
 	"http/internal/config"
 	"http/internal/middleware/auth"
 	"http/internal/models"
-	"http/internal/repository"
 	"log"
 	"net/http"
 )
@@ -26,8 +25,7 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 		Username: request["username"],
 	}
 
-	storage := repository.NewStorage(h.Storage)
-	user, _ := storage.Db.GetUserByUsername(payload.Username)
+	user, _ := h.Storage.Db.GetUserByUsername(payload.Username)
 
 	if err != nil {
 		writer.WriteHeader(403)
@@ -53,7 +51,7 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 		Token: signedToken,
 	}
 
-	err = storage.Db.UpdateUserToken(signedToken, user.Id)
+	err = h.Storage.Db.UpdateUserToken(signedToken, user.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -70,9 +68,9 @@ func (h Handler) Login(writer http.ResponseWriter, r *http.Request) {
 
 func (h Handler) Logout(writer http.ResponseWriter, r *http.Request) {
 	clientToken := auth.GetToken(writer, r)
-	storage := repository.NewStorage(h.Storage)
-	user, err := storage.Db.GetUserByToken(clientToken)
-	err = storage.Db.UpdateUserToken("", user.Id)
+
+	user, err := h.Storage.Db.GetUserByToken(clientToken)
+	err = h.Storage.Db.UpdateUserToken("", user.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -85,14 +83,13 @@ func (h Handler) UpdateUser(writer http.ResponseWriter, r *http.Request) {
 
 	var request map[string]string
 	clientToken := auth.GetToken(writer, r)
-	storage := repository.NewStorage(h.Storage)
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&request)
 	if err != nil {
 		log.Println(err)
 	}
-	err = storage.Db.UpdateUserTimezone(clientToken, request["timezone"])
+	err = h.Storage.Db.UpdateUserTimezone(clientToken, request["timezone"])
 	if err != nil {
 		log.Println(err)
 	}
