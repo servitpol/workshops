@@ -8,11 +8,11 @@ import (
 	"log"
 )
 
-type Postgres struct {
-	//
+type Repository struct {
+	Pool *pgxpool.Pool
 }
 
-func NewRepository() *pgxpool.Pool {
+func New() *pgxpool.Pool {
 
 	cfg := config.GetConfig()
 	var dbUrl = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", cfg.DB.User, cfg.DB.Pass, cfg.DB.Host, cfg.DB.Port, cfg.DB.DbName)

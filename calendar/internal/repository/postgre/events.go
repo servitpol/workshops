@@ -6,13 +6,12 @@ import (
 	"log"
 )
 
-func (pg *Postgres) GetEvents() ([]models.Event, error) {
+func (r *Repository) GetEvents() ([]models.Event, error) {
 
 	var e models.Event
 	sql := "SELECT * FROM events"
 
-	pgConn := NewRepository()
-	mRows, err := pgConn.Query(context.Background(), sql)
+	mRows, err := r.Pool.Query(context.Background(), sql)
 	if err != nil {
 		log.Println(err)
 	}
@@ -29,13 +28,12 @@ func (pg *Postgres) GetEvents() ([]models.Event, error) {
 	return mSlice, err
 }
 
-func (pg *Postgres) GetEventById(id string) (models.Event, error) {
+func (r *Repository) GetEventById(id string) (models.Event, error) {
 
 	var e models.Event
 	sql := "SELECT title, description, timestamp_from, timestamp_to FROM events WHERE id=$1"
 
-	pgConn := NewRepository()
-	mRows, err := pgConn.Query(context.Background(), sql, id)
+	mRows, err := r.Pool.Query(context.Background(), sql, id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -50,13 +48,12 @@ func (pg *Postgres) GetEventById(id string) (models.Event, error) {
 	return e, err
 }
 
-func (pg *Postgres) CreateEvent(event models.Event) (int, error) {
+func (r *Repository) CreateEvent(event models.Event) (int, error) {
 
 	sql := "INSERT INTO events(user_id, title, description, timestamp_from, timestamp_to ) " +
 		"VALUES ($1, $2, $3, $4, $5) RETURNING id"
 
-	pgConn := NewRepository()
-	err := pgConn.QueryRow(context.Background(), sql,
+	err := r.Pool.QueryRow(context.Background(), sql,
 		event.Uid,
 		event.Title,
 		event.Description,
@@ -71,12 +68,11 @@ func (pg *Postgres) CreateEvent(event models.Event) (int, error) {
 	return event.Id, err
 }
 
-func (pg *Postgres) UpdateEvent(event models.Event, id int) error {
+func (r *Repository) UpdateEvent(event models.Event, id int) error {
 
 	sql := "UPDATE events SET title=$1, description=$2, timestamp_from=$3, timestamp_to=$4 WHERE id=$5 AND user_id=$6"
 
-	pgConn := NewRepository()
-	_, err := pgConn.Query(context.Background(), sql,
+	_, err := r.Pool.Query(context.Background(), sql,
 		event.Title,
 		event.Description,
 		event.TimestampFrom,

@@ -3,16 +3,19 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"http/internal/repository"
-	"http/internal/repository/postgre"
+	storage "http/internal/repository/postgre"
 	"http/internal/server/http"
 	"http/internal/services/validator"
 )
 
 func main() {
-	router := mux.NewRouter()
-	storage := &postgre.Postgres{}
-	str := *repository.NewStorage(storage)
+	pgConn := storage.New()
+	s := &storage.Repository{Pool: pgConn}
+
+	str := *repository.NewStorage(s)
 	server := http.NewServer(&validator.Service{}, str)
+
+	router := mux.NewRouter()
 	server.Register(router)
 	http.StartServer(router)
 }
