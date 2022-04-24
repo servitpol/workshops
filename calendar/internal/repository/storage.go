@@ -2,6 +2,8 @@ package repository
 
 import "http/internal/models"
 
+//go:generate mockgen -source=storage.go -destination=mocks/mock.go
+
 type Storage interface {
 	GetUserByUsername(string) (models.User, error)
 	GetUserByToken(string) (models.User, error)
