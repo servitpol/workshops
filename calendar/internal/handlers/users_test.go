@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"bytes"
+	todo "calendar/internal/models"
+	"calendar/internal/repository"
+	service_mocks "calendar/internal/repository/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	todo "http/internal/models"
-	"http/internal/repository"
-	service_mocks "http/internal/repository/mocks"
 	"net/http"
 	"net/http/httptest"
 	"testing"

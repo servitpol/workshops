@@ -1,10 +1,10 @@
 package http
 
 import (
+	"calendar/internal/config"
+	"calendar/internal/handlers"
+	"calendar/internal/repository"
 	"github.com/gorilla/mux"
-	"http/internal/config"
-	"http/internal/handlers"
-	"http/internal/repository"
 	"log"
 	"net/http"
 	"time"

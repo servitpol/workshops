@@ -1,8 +1,8 @@
 package http
 
 import (
+	"calendar/internal/middleware/auth"
 	"github.com/gorilla/mux"
-	"http/internal/middleware/auth"
 	"net/http"
 )
 

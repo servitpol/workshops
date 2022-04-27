@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"calendar/internal/middleware/auth"
+	"calendar/internal/models"
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"http/internal/middleware/auth"
-	"http/internal/models"
 	"log"
 	"net/http"
 	"strconv"

@@ -1,10 +1,10 @@
 package postgre
 
 import (
+	"calendar/internal/config"
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"http/internal/config"
 	"log"
 )
 

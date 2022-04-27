@@ -1,8 +1,8 @@
 package postgre
 
 import (
+	"calendar/internal/models"
 	"context"
-	"http/internal/models"
 	"log"
 )
 

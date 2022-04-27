@@ -1,8 +1,8 @@
 package auth
 
 import (
+	"calendar/internal/config"
 	"errors"
-	"http/internal/config"
 	"net/http"
 	"strings"
 	"time"

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "./pkg/api";
+
+service GHandlers {
+  rpc UpdateUser(gRequest) returns (gResponse) {}
+  rpc GetEvents(gRequest) returns (gResponse) {}
+  rpc CreateEvent(gRequest) returns (gResponse) {}
+  rpc GetEventById(gRequest) returns (gResponse) {}
+  rpc UpdateEvent(gRequest) returns (gResponse) {}
+}
+
+message gRequest {
+  string x = 1;
+}
+
+message gResponse {
+  string result = 1;
+}

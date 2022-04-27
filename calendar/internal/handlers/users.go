@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"calendar/internal/config"
+	"calendar/internal/middleware/auth"
+	"calendar/internal/models"
 	"encoding/json"
-	"http/internal/config"
-	"http/internal/middleware/auth"
-	"http/internal/models"
 	"log"
 	"net/http"
 )

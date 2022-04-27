@@ -5,7 +5,7 @@
 package mock_repository
 
 import (
-	models "http/internal/models"
+	models "calendar/internal/models"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -15,6 +15,16 @@ import (
 type MockStorage struct {
 	ctrl     *gomock.Controller
 	recorder *MockStorageMockRecorder
+}
+
+func (m *MockStorage) GetUserById(id string) (models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockStorage) UpdateUserTimezoneById(id, timezone string) error {
+	//TODO implement me
+	panic("implement me")
 }
 
 // MockStorageMockRecorder is the mock recorder for MockStorage.

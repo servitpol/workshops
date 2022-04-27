@@ -1,11 +1,11 @@
 package main
 
 import (
+	"calendar/internal/repository"
+	storage "calendar/internal/repository/postgre"
+	"calendar/internal/server/http"
+	"calendar/internal/services/validator"
 	"github.com/gorilla/mux"
-	"http/internal/repository"
-	storage "http/internal/repository/postgre"
-	"http/internal/server/http"
-	"http/internal/services/validator"
 )
 
 func main() {

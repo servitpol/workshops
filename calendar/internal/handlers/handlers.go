@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"http/internal/repository"
+	"calendar/internal/repository"
 )
 
 type Handler struct {
